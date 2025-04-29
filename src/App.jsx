@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import Header from "./components/layout/Header";
 import CertificateEditor from "./components/certificate/CertificateEditor";
 import CertificatePreview from "./components/certificate/CertificatePreview";
+import ModelSelectionScreen from "./components/certificate/ModelSelectionScreen";
 import useDraggable from "./hooks/useDraggable";
 import {
   defaultTextFields,
@@ -9,12 +10,16 @@ import {
 } from "./constants/defaultFields";
 
 export default function App() {
+  // Estado para controlar o fluxo de telas
+  const [currentStep, setCurrentStep] = useState("model-selection"); // 'model-selection' ou 'certificate-editor'
+  const [selectedModel, setSelectedModel] = useState(null);
+
   const [hasSecondPage, setHasSecondPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [colors, setColors] = useState({
     bgColor: "#1a1a1a",
     borderColor: "#ffc107",
-    textColor: "#ffffff",
+    textColor: "#1a1a1a",
     accentColor: "#ffc107",
   });
 
@@ -146,38 +151,71 @@ export default function App() {
     setCurrentPage(pageNumber);
   };
 
+  // Função para selecionar um modelo
+  const handleSelectModel = (model) => {
+    setSelectedModel(model);
+  };
+
+  // Função para continuar para a edição após selecionar um modelo
+  const handleContinueToEditor = (model) => {
+    if (model) {
+      setSelectedModel(model);
+
+      // Se o modelo tiver uma segunda página, habilitamos automaticamente
+      if (model.backgrounds && model.backgrounds.page2) {
+        setHasSecondPage(true);
+      }
+
+      setCurrentStep("certificate-editor");
+    }
+  };
+
+  // Função para voltar para a seleção de modelo
+  const handleBackToModelSelection = () => {
+    setCurrentStep("model-selection");
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <Header />
 
-      <div className="flex flex-1 overflow-hidden">
-        <CertificateEditor
-          hasSecondPage={hasSecondPage}
-          setHasSecondPage={setHasSecondPage}
-          currentPage={currentPage}
-          changePage={changePage}
-          activeFields={activeFields}
-          updateFieldValue={updateFieldValue}
-          updateFontSize={updateFontSize}
-          updateFontFamily={updateFontFamily}
-          removeTextField={removeTextField}
-          addTextField={addTextField}
-          colors={colors}
-          setColors={setColors}
+      {currentStep === "model-selection" ? (
+        <ModelSelectionScreen
+          onSelectModel={handleSelectModel}
+          onContinue={handleContinueToEditor}
         />
+      ) : (
+        <div className="flex-1 flex overflow-hidden">
+          <CertificateEditor
+            hasSecondPage={hasSecondPage}
+            setHasSecondPage={setHasSecondPage}
+            currentPage={currentPage}
+            changePage={changePage}
+            activeFields={activeFields}
+            updateFieldValue={updateFieldValue}
+            updateFontSize={updateFontSize}
+            updateFontFamily={updateFontFamily}
+            removeTextField={removeTextField}
+            addTextField={addTextField}
+            colors={colors}
+            setColors={setColors}
+            onBackToModelSelection={handleBackToModelSelection}
+          />
 
-        <CertificatePreview
-          textFields={textFields}
-          programContentFields={programContentFields}
-          colors={colors}
-          hasSecondPage={hasSecondPage}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-          startDragFirstPage={startDragFirstPage}
-          startDragSecondPage={startDragSecondPage}
-          pdfContainerRef={pdfContainerRef}
-        />
-      </div>
+          <CertificatePreview
+            textFields={textFields}
+            programContentFields={programContentFields}
+            colors={colors}
+            hasSecondPage={hasSecondPage}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            startDragFirstPage={startDragFirstPage}
+            startDragSecondPage={startDragSecondPage}
+            pdfContainerRef={pdfContainerRef}
+            selectedModel={selectedModel}
+          />
+        </div>
+      )}
     </div>
   );
 }

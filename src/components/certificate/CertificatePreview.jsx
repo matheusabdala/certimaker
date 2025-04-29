@@ -13,12 +13,16 @@ export default function CertificatePreview({
   startDragFirstPage,
   startDragSecondPage,
   pdfContainerRef,
+  selectedModel,
 }) {
   const { bgColor, borderColor, textColor, accentColor } = colors;
 
   const changePage = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
+
+  // Verifica se o modelo selecionado tem segunda página
+  const modelHasSecondPage = selectedModel && selectedModel.backgrounds?.page2;
 
   return (
     <div className="w-2/3 bg-gray-200 p-4 flex flex-col">
@@ -32,6 +36,7 @@ export default function CertificatePreview({
             textColor={textColor}
             startDrag={startDragFirstPage}
             isVisible={currentPage === 1}
+            selectedModel={selectedModel}
           />
 
           <CertificateSecondPage
@@ -42,6 +47,7 @@ export default function CertificatePreview({
             textColor={textColor}
             startDrag={startDragSecondPage}
             isVisible={currentPage === 2 && hasSecondPage}
+            selectedModel={selectedModel}
           />
         </div>
       </div>
@@ -54,6 +60,7 @@ export default function CertificatePreview({
         setCurrentPage={setCurrentPage}
         textFields={textFields}
         programContentFields={programContentFields}
+        selectedModel={selectedModel}
       />
     </div>
   );

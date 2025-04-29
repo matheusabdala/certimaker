@@ -22,7 +22,7 @@ export default function CertificateEditor({
     <div className="w-1/3 bg-white p-4 overflow-y-auto border-r border-gray-200">
       <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">Configurações</h2>
+          <h2 className="text-lg font-semibold text-gray-700">Configurações</h2>
           <div className="flex items-center">
             <input
               type="checkbox"
@@ -31,7 +31,9 @@ export default function CertificateEditor({
               onChange={(e) => setHasSecondPage(e.target.checked)}
               className="mr-2"
             />
-            <label htmlFor="hasSecondPage">Conteúdo Programático</label>
+            <label htmlFor="hasSecondPage" className="text-gray-600">
+              Conteúdo Programático
+            </label>
           </div>
         </div>
 
