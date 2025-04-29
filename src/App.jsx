@@ -4,6 +4,7 @@ import CertificateEditor from "./components/certificate/CertificateEditor";
 import CertificatePreview from "./components/certificate/CertificatePreview";
 import ModelSelectionScreen from "./components/certificate/ModelSelectionScreen";
 import useDraggable from "./hooks/useDraggable";
+import useImageDraggable from "./hooks/useImageDraggable";
 import {
   defaultTextFields,
   defaultProgramContentFields,
@@ -38,10 +39,30 @@ export default function App() {
     startDrag: startDragSecondPage,
   } = useDraggable(defaultProgramContentFields, pdfContainerRef);
 
+  // Usando o hook para imagens arrastáveis
+  const {
+    images: firstPageImages,
+    setImages: setFirstPageImages,
+    startDrag: startDragFirstPageImage,
+    startResize: startResizeFirstPageImage,
+  } = useImageDraggable([], pdfContainerRef);
+
+  const {
+    images: secondPageImages,
+    setImages: setSecondPageImages,
+    startDrag: startDragSecondPageImage,
+    startResize: startResizeSecondPageImage,
+  } = useImageDraggable([], pdfContainerRef);
+
   // Obter os campos ativos com base na página atual
   const activeFields = currentPage === 1 ? textFields : programContentFields;
   const setActiveFields =
     currentPage === 1 ? setTextFields : setProgramContentFields;
+
+  // Obter as imagens ativas com base na página atual
+  const activeImages = currentPage === 1 ? firstPageImages : secondPageImages;
+  const setActiveImages =
+    currentPage === 1 ? setFirstPageImages : setSecondPageImages;
 
   // Função para adicionar um novo campo de texto
   const addTextField = () => {
@@ -81,6 +102,101 @@ export default function App() {
           isDragging: false,
         },
       ]);
+    }
+  };
+
+  // Função para adicionar uma nova imagem
+  const addImage = (imageData) => {
+    if (currentPage === 1) {
+      const newId =
+        firstPageImages.length > 0
+          ? Math.max(...firstPageImages.map((img) => img.id)) + 1
+          : 1;
+
+      setFirstPageImages([
+        ...firstPageImages,
+        {
+          id: newId,
+          label: `Imagem ${newId}`,
+          url: imageData.url,
+          x: 100,
+          y: 100,
+          width: imageData.width,
+          height: imageData.height,
+          isDragging: false,
+        },
+      ]);
+    } else {
+      const newId =
+        secondPageImages.length > 0
+          ? Math.max(...secondPageImages.map((img) => img.id)) + 1
+          : 1;
+
+      setSecondPageImages([
+        ...secondPageImages,
+        {
+          id: newId,
+          label: `Imagem ${newId}`,
+          url: imageData.url,
+          x: 100,
+          y: 100,
+          width: imageData.width,
+          height: imageData.height,
+          isDragging: false,
+        },
+      ]);
+    }
+  };
+
+  // Nova função para adicionar uma imagem padrão
+  const addDefaultImage = (imageData) => {
+    if (currentPage === 1) {
+      const newId =
+        firstPageImages.length > 0
+          ? Math.max(...firstPageImages.map((img) => img.id)) + 1
+          : 1;
+
+      setFirstPageImages([
+        ...firstPageImages,
+        {
+          id: newId,
+          label: imageData.label,
+          url: imageData.path, // Usa o path da imagem padrão
+          x: imageData.x,
+          y: imageData.y,
+          width: imageData.width,
+          height: imageData.height,
+          isDragging: false,
+        },
+      ]);
+    } else {
+      const newId =
+        secondPageImages.length > 0
+          ? Math.max(...secondPageImages.map((img) => img.id)) + 1
+          : 1;
+
+      setSecondPageImages([
+        ...secondPageImages,
+        {
+          id: newId,
+          label: imageData.label,
+          url: imageData.path, // Usa o path da imagem padrão
+          x: imageData.x,
+          y: imageData.y,
+          width: imageData.width,
+          height: imageData.height,
+          isDragging: false,
+        },
+      ]);
+    }
+  };
+
+  // Função para remover uma imagem
+  const removeImage = (id) => {
+    if (currentPage === 1) {
+      setFirstPageImages(firstPageImages.filter((img) => img.id !== id));
+    } else {
+      setSecondPageImages(secondPageImages.filter((img) => img.id !== id));
     }
   };
 
@@ -192,11 +308,15 @@ export default function App() {
             currentPage={currentPage}
             changePage={changePage}
             activeFields={activeFields}
+            activeImages={activeImages}
             updateFieldValue={updateFieldValue}
             updateFontSize={updateFontSize}
             updateFontFamily={updateFontFamily}
             removeTextField={removeTextField}
+            removeImage={removeImage}
             addTextField={addTextField}
+            addImage={addImage}
+            addDefaultImage={addDefaultImage} // Nova função passada como prop
             colors={colors}
             setColors={setColors}
             onBackToModelSelection={handleBackToModelSelection}
@@ -205,12 +325,18 @@ export default function App() {
           <CertificatePreview
             textFields={textFields}
             programContentFields={programContentFields}
+            firstPageImages={firstPageImages}
+            secondPageImages={secondPageImages}
             colors={colors}
             hasSecondPage={hasSecondPage}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             startDragFirstPage={startDragFirstPage}
             startDragSecondPage={startDragSecondPage}
+            startDragFirstPageImage={startDragFirstPageImage}
+            startDragSecondPageImage={startDragSecondPageImage}
+            startResizeFirstPageImage={startResizeFirstPageImage}
+            startResizeSecondPageImage={startResizeSecondPageImage}
             pdfContainerRef={pdfContainerRef}
             selectedModel={selectedModel}
           />

@@ -1,13 +1,17 @@
 import React from "react";
 import TextField from "./TextField";
+import ImageField from "./ImageField"; // Importar o novo componente
 
 export default function CertificateFirstPage({
   fields,
+  images, // Novo prop para imagens
   bgColor,
   borderColor,
   accentColor,
   textColor,
   startDrag,
+  startDragImage, // Nova função para arrastar imagens
+  startResizeImage, // Nova função para redimensionar imagens
   isVisible,
   selectedModel,
 }) {
@@ -72,6 +76,17 @@ export default function CertificateFirstPage({
           />
         </>
       )}
+
+      {/* Imagens do certificado página 1 */}
+      {images &&
+        images.map((image) => (
+          <ImageField
+            key={image.id}
+            image={image}
+            startDrag={startDragImage}
+            startResize={startResizeImage}
+          />
+        ))}
 
       {/* Campos de texto do certificado página 1 */}
       {fields.map((field) => (
