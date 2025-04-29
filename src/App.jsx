@@ -4,7 +4,7 @@ import CertificateEditor from "./components/certificate/CertificateEditor";
 import CertificatePreview from "./components/certificate/CertificatePreview";
 import ModelSelectionScreen from "./components/certificate/ModelSelectionScreen";
 import useDraggable from "./hooks/useDraggable";
-import useImageDraggable from "./hooks/useImageDraggable";
+import useImageDraggable from "./hooks/useImageDraggable"; // Importar o hook para imagens draggable
 import {
   defaultTextFields,
   defaultProgramContentFields,
@@ -148,49 +148,6 @@ export default function App() {
     }
   };
 
-  // Nova função para adicionar uma imagem padrão
-  const addDefaultImage = (imageData) => {
-    if (currentPage === 1) {
-      const newId =
-        firstPageImages.length > 0
-          ? Math.max(...firstPageImages.map((img) => img.id)) + 1
-          : 1;
-
-      setFirstPageImages([
-        ...firstPageImages,
-        {
-          id: newId,
-          label: imageData.label,
-          url: imageData.path, // Usa o path da imagem padrão
-          x: imageData.x,
-          y: imageData.y,
-          width: imageData.width,
-          height: imageData.height,
-          isDragging: false,
-        },
-      ]);
-    } else {
-      const newId =
-        secondPageImages.length > 0
-          ? Math.max(...secondPageImages.map((img) => img.id)) + 1
-          : 1;
-
-      setSecondPageImages([
-        ...secondPageImages,
-        {
-          id: newId,
-          label: imageData.label,
-          url: imageData.path, // Usa o path da imagem padrão
-          x: imageData.x,
-          y: imageData.y,
-          width: imageData.width,
-          height: imageData.height,
-          isDragging: false,
-        },
-      ]);
-    }
-  };
-
   // Função para remover uma imagem
   const removeImage = (id) => {
     if (currentPage === 1) {
@@ -316,7 +273,6 @@ export default function App() {
             removeImage={removeImage}
             addTextField={addTextField}
             addImage={addImage}
-            addDefaultImage={addDefaultImage} // Nova função passada como prop
             colors={colors}
             setColors={setColors}
             onBackToModelSelection={handleBackToModelSelection}
