@@ -1,11 +1,20 @@
 import React, { useState } from "react";
-import { Trash2, Bold, List, FileText } from "lucide-react";
+import {
+  Trash2,
+  Bold,
+  List,
+  FileText,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+} from "lucide-react";
 
 export default function TextFieldEditor({
   field,
   updateFieldValue,
   updateFontSize,
   updateFontFamily,
+  updateTextAlign,
   removeTextField,
 }) {
   const [selectedText, setSelectedText] = useState({ start: 0, end: 0 });
@@ -31,7 +40,7 @@ export default function TextFieldEditor({
     }
   };
 
-  // Função para aplicar negrito ao texto selecionado
+  // Função para aplicar negrito ao texto selecionado com **
   const applyBoldToSelection = () => {
     if (selectedText.start === selectedText.end) return;
 
@@ -43,12 +52,12 @@ export default function TextFieldEditor({
     const after = field.value.substring(selectedText.end);
 
     // Verificamos se o texto selecionado já está em negrito
-    // Se estiver, removemos as tags; se não, adicionamos
-    const isBold = selected.startsWith("<b>") && selected.endsWith("</b>");
+    // Se estiver, removemos os asteriscos; se não, adicionamos
+    const isBold = selected.startsWith("**") && selected.endsWith("**");
 
     const newValue = isBold
-      ? before + selected.substring(3, selected.length - 4) + after
-      : before + "<b>" + selected + "</b>" + after;
+      ? before + selected.substring(2, selected.length - 2) + after
+      : before + "**" + selected + "**" + after;
 
     updateFieldValue(field.id, newValue);
     setSelectedText({ start: 0, end: 0 });
@@ -87,20 +96,22 @@ export default function TextFieldEditor({
       }
 
       // Verifica se a linha já tem um bullet
-      const lineHasBullet = field.value.substring(lineStart).startsWith("• ");
+      const lineHasBullet = field.value
+        .substring(lineStart)
+        .startsWith("<bullet>");
 
       if (lineHasBullet) {
         // Remove o bullet
         const newValue =
           field.value.substring(0, lineStart) +
-          field.value.substring(lineStart + 2); // "• " tem 2 caracteres
+          field.value.substring(lineStart + 8); // "<bullet>" tem 8 caracteres
 
         updateFieldValue(field.id, newValue);
       } else {
         // Adiciona o bullet
         const newValue =
           field.value.substring(0, lineStart) +
-          "• " +
+          "<bullet>" +
           field.value.substring(lineStart);
 
         updateFieldValue(field.id, newValue);
@@ -115,7 +126,7 @@ export default function TextFieldEditor({
       // Dividir em linhas, adicionar bullet a cada uma e juntar novamente
       const lines = selected.split("\n");
       const processedLines = lines.map((line) =>
-        line.startsWith("• ") ? line : "• " + line
+        line.startsWith("<bullet>") ? line : "<bullet>" + line
       );
 
       const newValue =
@@ -127,6 +138,11 @@ export default function TextFieldEditor({
     }
 
     setSelectedText({ start: 0, end: 0 });
+  };
+
+  // Função para alterar o alinhamento do texto
+  const changeTextAlign = (alignment) => {
+    updateTextAlign(field.id, alignment);
   };
 
   return (
@@ -157,6 +173,44 @@ export default function TextFieldEditor({
         >
           <List size={16} />
         </button>
+
+        <button
+          onClick={addLineBreak}
+          className="p-2 bg-gray-200 hover:bg-gray-300 rounded flex items-center"
+          title="Adicionar quebra de linha"
+        >
+          <FileText size={16} />
+        </button>
+
+        <div className="flex border border-gray-300 rounded">
+          <button
+            onClick={() => changeTextAlign("left")}
+            className={`p-2 ${
+              field.textAlign === "left" ? "bg-blue-100" : "bg-gray-200"
+            } hover:bg-gray-300 rounded-l flex items-center`}
+            title="Alinhar à esquerda"
+          >
+            <AlignLeft size={16} />
+          </button>
+          <button
+            onClick={() => changeTextAlign("center")}
+            className={`p-2 ${
+              field.textAlign === "center" ? "bg-blue-100" : "bg-gray-200"
+            } hover:bg-gray-300 flex items-center`}
+            title="Centralizar"
+          >
+            <AlignCenter size={16} />
+          </button>
+          <button
+            onClick={() => changeTextAlign("right")}
+            className={`p-2 ${
+              field.textAlign === "right" ? "bg-blue-100" : "bg-gray-200"
+            } hover:bg-gray-300 rounded-r flex items-center`}
+            title="Alinhar à direita"
+          >
+            <AlignRight size={16} />
+          </button>
+        </div>
 
         <select
           value={field.fontFamily || "Arial, sans-serif"}

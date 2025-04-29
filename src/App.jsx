@@ -4,7 +4,7 @@ import CertificateEditor from "./components/certificate/CertificateEditor";
 import CertificatePreview from "./components/certificate/CertificatePreview";
 import ModelSelectionScreen from "./components/certificate/ModelSelectionScreen";
 import useDraggable from "./hooks/useDraggable";
-import useImageDraggable from "./hooks/useImageDraggable"; // Importar o hook para imagens draggable
+import useImageDraggable from "./hooks/useImageDraggable";
 import {
   defaultTextFields,
   defaultProgramContentFields,
@@ -81,6 +81,7 @@ export default function App() {
           y: 200,
           fontSize: 14,
           fontFamily: "Arial, sans-serif",
+          textAlign: "left", // Valor padrão para alinhamento
           isDragging: false,
         },
       ]);
@@ -99,6 +100,7 @@ export default function App() {
           y: 200,
           fontSize: 14,
           fontFamily: "Arial, sans-serif",
+          textAlign: "left", // Valor padrão para alinhamento
           isDragging: false,
         },
       ]);
@@ -140,6 +142,49 @@ export default function App() {
           url: imageData.url,
           x: 100,
           y: 100,
+          width: imageData.width,
+          height: imageData.height,
+          isDragging: false,
+        },
+      ]);
+    }
+  };
+
+  // Nova função para adicionar uma imagem padrão
+  const addDefaultImage = (imageData) => {
+    if (currentPage === 1) {
+      const newId =
+        firstPageImages.length > 0
+          ? Math.max(...firstPageImages.map((img) => img.id)) + 1
+          : 1;
+
+      setFirstPageImages([
+        ...firstPageImages,
+        {
+          id: newId,
+          label: imageData.label,
+          url: imageData.path, // Usa o path da imagem padrão
+          x: imageData.x,
+          y: imageData.y,
+          width: imageData.width,
+          height: imageData.height,
+          isDragging: false,
+        },
+      ]);
+    } else {
+      const newId =
+        secondPageImages.length > 0
+          ? Math.max(...secondPageImages.map((img) => img.id)) + 1
+          : 1;
+
+      setSecondPageImages([
+        ...secondPageImages,
+        {
+          id: newId,
+          label: imageData.label,
+          url: imageData.path, // Usa o path da imagem padrão
+          x: imageData.x,
+          y: imageData.y,
           width: imageData.width,
           height: imageData.height,
           isDragging: false,
@@ -219,6 +264,23 @@ export default function App() {
     }
   };
 
+  // Nova função para atualizar o alinhamento do texto
+  const updateTextAlign = (id, textAlign) => {
+    if (currentPage === 1) {
+      setTextFields(
+        textFields.map((field) =>
+          field.id === id ? { ...field, textAlign } : field
+        )
+      );
+    } else {
+      setProgramContentFields(
+        programContentFields.map((field) =>
+          field.id === id ? { ...field, textAlign } : field
+        )
+      );
+    }
+  };
+
   // Função para mudar de página
   const changePage = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -269,10 +331,12 @@ export default function App() {
             updateFieldValue={updateFieldValue}
             updateFontSize={updateFontSize}
             updateFontFamily={updateFontFamily}
+            updateTextAlign={updateTextAlign}
             removeTextField={removeTextField}
             removeImage={removeImage}
             addTextField={addTextField}
             addImage={addImage}
+            addDefaultImage={addDefaultImage}
             colors={colors}
             setColors={setColors}
             onBackToModelSelection={handleBackToModelSelection}

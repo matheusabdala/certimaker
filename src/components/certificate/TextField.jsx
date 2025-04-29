@@ -1,9 +1,13 @@
 import React from "react";
 
 export default function TextField({ field, textColor, startDrag }) {
-  // Função para renderizar texto com formatação (negrito e quebra de linha)
+  // Função para renderizar texto com formatação (negrito, quebra de linha e bullets)
   const renderFormattedText = (text) => {
-    if (!text.includes("<b>") && !text.includes("\n") && !text.includes("• ")) {
+    if (
+      !text.includes("**") &&
+      !text.includes("\n") &&
+      !text.includes("<bullet>")
+    ) {
       return text;
     }
 
@@ -14,19 +18,20 @@ export default function TextField({ field, textColor, startDrag }) {
     return (
       <>
         {lines.map((line, lineIndex) => {
-          // Verificar se a linha começa com um bullet
-          const isBullet = line.startsWith("• ");
+          // Verificar se é uma linha com bullet
+          const isBullet = line.includes("<bullet>");
 
-          // Processamos o restante da linha (removendo o bullet se necessário)
-          let processedLine = isBullet ? line.substring(2) : line;
+          // Remover a tag de bullet para processar o restante da formatação
+          let processedLine = isBullet ? line.replace("<bullet>", "") : line;
 
           // Dividir em partes (texto normal e negrito)
           const parts = [];
           let currentText = processedLine;
           let boldStartIndex;
 
-          while ((boldStartIndex = currentText.indexOf("<b>")) !== -1) {
-            // Adiciona o texto antes da tag <b>
+          // Procura por marcação de negrito com asteriscos duplos (**)
+          while ((boldStartIndex = currentText.indexOf("**")) !== -1) {
+            // Adiciona o texto antes do **
             if (boldStartIndex > 0) {
               parts.push({
                 text: currentText.substring(0, boldStartIndex),
@@ -34,21 +39,21 @@ export default function TextField({ field, textColor, startDrag }) {
               });
             }
 
-            // Procura o final da tag </b>
-            const boldEndIndex = currentText.indexOf("</b>", boldStartIndex);
-            if (boldEndIndex === -1) break; // Tag não fechada, encerra
+            // Procura o final da marcação **
+            const boldEndIndex = currentText.indexOf("**", boldStartIndex + 2);
+            if (boldEndIndex === -1) break; // Marcação não fechada, encerra
 
-            // Adiciona o texto em negrito (sem as tags)
+            // Adiciona o texto em negrito (sem os **)
             parts.push({
-              text: currentText.substring(boldStartIndex + 3, boldEndIndex),
+              text: currentText.substring(boldStartIndex + 2, boldEndIndex),
               bold: true,
             });
 
             // Atualiza o texto restante
-            currentText = currentText.substring(boldEndIndex + 4);
+            currentText = currentText.substring(boldEndIndex + 2);
           }
 
-          // Adiciona o texto restante após o último </b>
+          // Adiciona o texto restante após o último **
           if (currentText.length > 0) {
             parts.push({
               text: currentText,
@@ -83,6 +88,18 @@ export default function TextField({ field, textColor, startDrag }) {
     );
   };
 
+  // Obtenha o alinhamento de texto do campo ou use um padrão apropriado
+  // Se for o campo 1 ou 2, mantemos o "center" como padrão para compatibilidade
+  const getTextAlign = () => {
+    if (field.textAlign) {
+      return field.textAlign;
+    } else if (field.id === 1 || field.id === 2) {
+      return "center";
+    } else {
+      return "left";
+    }
+  };
+
   return (
     <div
       className={`absolute cursor-move ${
@@ -95,7 +112,7 @@ export default function TextField({ field, textColor, startDrag }) {
         color: textColor,
         fontFamily: field.fontFamily || "Arial, sans-serif",
         maxWidth: field.width ? `${field.width}px` : "500px",
-        textAlign: field.id === 1 || field.id === 2 ? "center" : "left",
+        textAlign: getTextAlign(),
         cursor: "move",
         userSelect: "none",
       }}

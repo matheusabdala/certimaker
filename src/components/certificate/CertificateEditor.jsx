@@ -1,10 +1,9 @@
-// As modificações para o CertificateEditor.jsx são as seguintes:
-
 import React from "react";
 import { Plus } from "lucide-react";
 import TextFieldEditor from "./TextFieldEditor";
-import ImageFieldEditor from "./ImageFieldEditor"; // Importar o novo componente
-import ImageUploader from "./ImageUploader"; // Importar o novo componente
+import ImageFieldEditor from "./ImageFieldEditor";
+import ImageUploader from "./ImageUploader";
+import DefaultImagesSelector from "./DefaultImagesSelector"; // Importar o novo componente
 import PageNavigation from "../ui/PageNavigation";
 import ColorPicker from "../ui/ColorPicker";
 
@@ -14,16 +13,19 @@ export default function CertificateEditor({
   currentPage,
   changePage,
   activeFields,
-  activeImages, // Novo prop para imagens
+  activeImages,
   updateFieldValue,
   updateFontSize,
   updateFontFamily,
+  updateTextAlign,
   removeTextField,
-  removeImage, // Nova função para remover imagens
+  removeImage,
   addTextField,
-  addImage, // Nova função para adicionar imagens
+  addImage,
+  addDefaultImage, // Nova função para adicionar imagens padrão
   colors,
   setColors,
+  onBackToModelSelection,
 }) {
   return (
     <div className="w-1/3 bg-white p-4 overflow-y-auto border-r border-gray-200">
@@ -61,6 +63,7 @@ export default function CertificateEditor({
             updateFieldValue={updateFieldValue}
             updateFontSize={updateFontSize}
             updateFontFamily={updateFontFamily}
+            updateTextAlign={updateTextAlign}
             removeTextField={removeTextField}
           />
         ))}
@@ -73,7 +76,7 @@ export default function CertificateEditor({
         </button>
       </div>
 
-      {/* Nova seção para imagens */}
+      {/* Seção para imagens */}
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-3">Imagens</h2>
 
@@ -86,10 +89,22 @@ export default function CertificateEditor({
             />
           ))}
 
-        <ImageUploader onImageUploaded={addImage} />
+        {/* Novo componente para imagens padrão */}
+        <DefaultImagesSelector
+          onAddDefaultImage={addDefaultImage}
+          currentPage={currentPage}
+        />
       </div>
 
       <ColorPicker colors={colors} setColors={setColors} />
+
+      {/* Botão para voltar à seleção de modelo */}
+      <button
+        onClick={onBackToModelSelection}
+        className="flex items-center justify-center w-full p-2 mt-4 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+      >
+        Voltar para seleção de modelo
+      </button>
     </div>
   );
 }
