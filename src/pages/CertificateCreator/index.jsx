@@ -1,4 +1,3 @@
-// src/pages/CertificateCreator/index.jsx
 import React, { useState, useRef } from "react";
 import CertificateEditor from "../../components/certificate/CertificateEditor";
 import CertificatePreview from "../../components/certificate/CertificatePreview";
@@ -328,14 +327,14 @@ export default function CertificateCreator() {
   };
 
   return (
-    <div className="flex flex-col flex-1 overflow-hidden">
+    <div className="flex flex-col h-full">
       {currentStep === "model-selection" ? (
         <ModelSelectionScreen
           onSelectModel={handleSelectModel}
           onContinue={handleContinueToEditor}
         />
       ) : (
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex h-full">
           <CertificateEditor
             hasSecondPage={hasSecondPage}
             setHasSecondPage={setHasSecondPage}

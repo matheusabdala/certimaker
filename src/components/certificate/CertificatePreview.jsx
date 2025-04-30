@@ -6,18 +6,18 @@ import ActionButtons from "../ui/ActionButtons";
 export default function CertificatePreview({
   textFields,
   programContentFields,
-  firstPageImages, // Nova prop para imagens da primeira página
-  secondPageImages, // Nova prop para imagens da segunda página
+  firstPageImages,
+  secondPageImages,
   colors,
   hasSecondPage,
   currentPage,
   setCurrentPage,
   startDragFirstPage,
   startDragSecondPage,
-  startDragFirstPageImage, // Nova função para arrastar imagens na primeira página
-  startDragSecondPageImage, // Nova função para arrastar imagens na segunda página
-  startResizeFirstPageImage, // Nova função para redimensionar imagens na primeira página
-  startResizeSecondPageImage, // Nova função para redimensionar imagens na segunda página
+  startDragFirstPageImage,
+  startDragSecondPageImage,
+  startResizeFirstPageImage,
+  startResizeSecondPageImage,
   pdfContainerRef,
   selectedModel,
 }) {
@@ -27,12 +27,11 @@ export default function CertificatePreview({
     setCurrentPage(pageNumber);
   };
 
-  // Verifica se o modelo selecionado tem segunda página
   const modelHasSecondPage = selectedModel && selectedModel.backgrounds?.page2;
 
   return (
-    <div className="w-2/3 bg-gray-200 p-4 flex flex-col">
-      <div className="flex-1 overflow-y-auto flex justify-center items-start">
+    <div className="w-2/3 bg-gray-200 flex flex-col h-full">
+      <div className="flex-1 overflow-y-auto p-4 flex justify-center items-start">
         <div className="relative shadow-xl" ref={pdfContainerRef}>
           <CertificateFirstPage
             fields={textFields}
@@ -64,18 +63,20 @@ export default function CertificatePreview({
         </div>
       </div>
 
-      <ActionButtons
-        hasSecondPage={hasSecondPage}
-        currentPage={currentPage}
-        changePage={changePage}
-        bgColor={bgColor}
-        setCurrentPage={setCurrentPage}
-        textFields={textFields}
-        programContentFields={programContentFields}
-        firstPageImages={firstPageImages}
-        secondPageImages={secondPageImages}
-        selectedModel={selectedModel}
-      />
+      <div className="p-4 border-t border-gray-200 bg-white">
+        <ActionButtons
+          hasSecondPage={hasSecondPage}
+          currentPage={currentPage}
+          changePage={changePage}
+          bgColor={bgColor}
+          setCurrentPage={setCurrentPage}
+          textFields={textFields}
+          programContentFields={programContentFields}
+          firstPageImages={firstPageImages}
+          secondPageImages={secondPageImages}
+          selectedModel={selectedModel}
+        />
+      </div>
     </div>
   );
 }

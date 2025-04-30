@@ -16,9 +16,7 @@ export default function Header() {
 
   // Função para verificar se o link está ativo
   const isActive = (path) => {
-    return location.pathname === path
-      ? "text-yellow-300"
-      : "hover:text-gray-300";
+    return location.pathname === path ? "text-blue-300" : "hover:text-gray-300";
   };
 
   return (
