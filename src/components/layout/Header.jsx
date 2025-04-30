@@ -1,3 +1,6 @@
+// src/components/layout/Header.jsx
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   GraduationCap,
   Users,
@@ -7,51 +10,59 @@ import {
   Settings,
   Rocket,
 } from "lucide-react";
-import React from "react";
 
 export default function Header() {
+  const location = useLocation();
+
+  // Função para verificar se o link está ativo
+  const isActive = (path) => {
+    return location.pathname === path
+      ? "text-yellow-300"
+      : "hover:text-gray-300";
+  };
+
   return (
     <header className="bg-gray-800 text-white p-4 flex items-center justify-between">
       {/* Logo com link para home */}
-      <a
-        href="/"
+      <Link
+        to="/"
         className="text-2xl font-bold inline-flex items-center gap-2 hover:text-gray-300"
       >
         <GraduationCap className="w-6 h-6" />
         CertiMaker
-      </a>
+      </Link>
 
       {/* Navegação central com ícones */}
       <nav className="flex gap-6 items-center">
-        <a href="/" className="hover:text-gray-300" title="Gerar Certificado">
+        <Link to="/" className={isActive("/")} title="Gerar Certificado">
           <Rocket className="w-5 h-5" />
-        </a>
-        <a href="/alunos" className="hover:text-gray-300" title="Alunos">
+        </Link>
+        <Link to="/alunos" className={isActive("/alunos")} title="Alunos">
           <Users className="w-5 h-5" />
-        </a>
-        <a href="/cursos" className="hover:text-gray-300" title="Cursos">
+        </Link>
+        <Link to="/cursos" className={isActive("/cursos")} title="Cursos">
           <BookOpen className="w-5 h-5" />
-        </a>
-        <a href="/turmas" className="hover:text-gray-300" title="Turmas">
+        </Link>
+        <Link to="/turmas" className={isActive("/turmas")} title="Turmas">
           <Layers className="w-5 h-5" />
-        </a>
-        <a
-          href="/certificados"
-          className="hover:text-gray-300"
+        </Link>
+        <Link
+          to="/certificados"
+          className={isActive("/certificados")}
           title="Certificados"
         >
           <BadgeCheck className="w-5 h-5" />
-        </a>
+        </Link>
       </nav>
 
       {/* Configurações à direita */}
-      <a
-        href="/configuracoes"
-        className="hover:text-gray-300"
+      <Link
+        to="/configuracoes"
+        className={isActive("/configuracoes")}
         title="Configurações"
       >
         <Settings className="w-5 h-5" />
-      </a>
+      </Link>
     </header>
   );
 }
