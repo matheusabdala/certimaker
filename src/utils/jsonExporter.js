@@ -27,7 +27,7 @@ export const exportFieldsToJSON = (
     positionY: Math.round(field.y),
     width: field.width || 500, // Valor padrão se não estiver definido
     page: programContentFields.some((f) => f.id === field.id) ? 2 : 1,
-    textAlign: field.id === 1 || field.id === 2 ? "center" : "left",
+    textAlign: field.textAlign || getDefaultTextAlign(field.id), // Usa o valor definido ou um padrão
   }));
 
   // Cria o objeto final com metadados
@@ -43,6 +43,12 @@ export const exportFieldsToJSON = (
 
   return exportData;
 };
+
+// Função auxiliar para obter um alinhamento padrão com base no ID
+// Usada apenas quando o textAlign não estiver definido no campo
+function getDefaultTextAlign(fieldId) {
+  return fieldId === 1 || fieldId === 2 ? "center" : "left";
+}
 
 // Função para enviar os dados via POST
 export const sendJSONToServer = async (

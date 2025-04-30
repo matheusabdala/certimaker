@@ -16,8 +16,10 @@ export default function TextFieldEditor({
   updateFontFamily,
   updateTextAlign,
   removeTextField,
+  updateFieldLabel, // Nova prop para atualizar o label do campo
 }) {
   const [selectedText, setSelectedText] = useState({ start: 0, end: 0 });
+  const [isEditingLabel, setIsEditingLabel] = useState(false); // Estado para controlar edição do label
 
   // Lista de fontes disponíveis
   const fontOptions = [
@@ -145,10 +147,40 @@ export default function TextFieldEditor({
     updateTextAlign(field.id, alignment);
   };
 
+  // Função para alternar o modo de edição do label
+  const toggleLabelEdit = () => {
+    setIsEditingLabel(!isEditingLabel);
+  };
+
+  // Função para lidar com a tecla Enter durante edição do label
+  const handleLabelKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setIsEditingLabel(false);
+    }
+  };
+
   return (
     <div className="mb-4 p-4 bg-gray-50 rounded-md shadow-sm">
       <div className="flex justify-between items-center mb-2">
-        <label className="font-medium text-gray-700">{field.label}</label>
+        {isEditingLabel ? (
+          <input
+            type="text"
+            value={field.label}
+            onChange={(e) => updateFieldLabel(field.id, e.target.value)}
+            onBlur={() => setIsEditingLabel(false)}
+            onKeyDown={handleLabelKeyDown}
+            className="font-medium text-gray-700 border border-gray-300 rounded px-2 py-1 w-1/2"
+            autoFocus
+          />
+        ) : (
+          <label
+            className="font-medium text-gray-700 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={toggleLabelEdit}
+            title="Clique para editar o nome do campo"
+          >
+            {field.label}
+          </label>
+        )}
         <button
           onClick={() => removeTextField(field.id)}
           className="text-red-500 hover:text-red-700"

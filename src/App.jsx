@@ -107,6 +107,23 @@ export default function App() {
     }
   };
 
+  // Nova função para atualizar o label (nome) de um campo
+  const updateFieldLabel = (id, label) => {
+    if (currentPage === 1) {
+      setTextFields(
+        textFields.map((field) =>
+          field.id === id ? { ...field, label } : field
+        )
+      );
+    } else {
+      setProgramContentFields(
+        programContentFields.map((field) =>
+          field.id === id ? { ...field, label } : field
+        )
+      );
+    }
+  };
+
   // Função para adicionar uma nova imagem
   const addImage = (imageData) => {
     if (currentPage === 1) {
@@ -332,6 +349,7 @@ export default function App() {
             updateFontSize={updateFontSize}
             updateFontFamily={updateFontFamily}
             updateTextAlign={updateTextAlign}
+            updateFieldLabel={updateFieldLabel} // Passar a nova função
             removeTextField={removeTextField}
             removeImage={removeImage}
             addTextField={addTextField}

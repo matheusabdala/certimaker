@@ -18,6 +18,7 @@ export default function CertificateEditor({
   updateFontSize,
   updateFontFamily,
   updateTextAlign,
+  updateFieldLabel, // Nova prop para atualizar o label do campo
   removeTextField,
   removeImage,
   addTextField,
@@ -64,6 +65,7 @@ export default function CertificateEditor({
             updateFontSize={updateFontSize}
             updateFontFamily={updateFontFamily}
             updateTextAlign={updateTextAlign}
+            updateFieldLabel={updateFieldLabel} // Passar a nova função
             removeTextField={removeTextField}
           />
         ))}
