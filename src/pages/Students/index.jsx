@@ -1,49 +1,96 @@
 import React, { useState, useEffect } from "react";
-import { Search, Plus, Pencil, Trash2, X, Check } from "lucide-react";
+import DataTable from "../../components/ui/DataTable";
+import Modal from "../../components/ui/Modal";
+import FormField from "../../components/ui/FormField";
+import { User, Mail, Phone } from "lucide-react";
 
-// Mock data para teste inicial
+// Mock data para testes
 const mockStudents = [
   {
     id: 1,
     name: "Ana Silva",
     cpf: "123.456.789-00",
-    email: "ana@example.com",
+    email: "ana.silva@email.com",
     phone: "(11) 98765-4321",
+    createdAt: "2024-01-10",
   },
   {
     id: 2,
     name: "Carlos Oliveira",
     cpf: "987.654.321-00",
-    email: "carlos@example.com",
-    phone: "(21) 91234-5678",
+    email: "carlos.oliveira@email.com",
+    phone: "(11) 91234-5678",
+    createdAt: "2024-01-15",
   },
   {
     id: 3,
     name: "Mariana Santos",
     cpf: "456.789.123-00",
-    email: "mariana@example.com",
-    phone: "(31) 95678-1234",
+    email: "mariana.santos@email.com",
+    phone: "(21) 99876-5432",
+    createdAt: "2024-02-05",
   },
   {
     id: 4,
-    name: "João Pereira",
+    name: "Pedro Costa",
     cpf: "789.123.456-00",
-    email: "joao@example.com",
-    phone: "(41) 92345-6789",
+    email: "pedro.costa@email.com",
+    phone: "(31) 98888-7777",
+    createdAt: "2024-02-10",
   },
   {
     id: 5,
-    name: "Juliana Costa",
+    name: "Juliana Lima",
     cpf: "321.654.987-00",
-    email: "juliana@example.com",
-    phone: "(51) 96789-0123",
+    email: "juliana.lima@email.com",
+    phone: "(47) 97777-8888",
+    createdAt: "2024-02-20",
+  },
+  {
+    id: 6,
+    name: "Roberto Almeida",
+    cpf: "654.987.321-00",
+    email: "roberto.almeida@email.com",
+    phone: "(19) 96666-5555",
+    createdAt: "2024-03-01",
+  },
+  {
+    id: 7,
+    name: "Fernanda Gomes",
+    cpf: "111.222.333-44",
+    email: "fernanda.gomes@email.com",
+    phone: "(51) 95555-4444",
+    createdAt: "2024-03-10",
+  },
+  {
+    id: 8,
+    name: "Lucas Martins",
+    cpf: "444.555.666-77",
+    email: "lucas.martins@email.com",
+    phone: "(41) 94444-3333",
+    createdAt: "2024-03-15",
+  },
+  {
+    id: 9,
+    name: "Amanda Pereira",
+    cpf: "777.888.999-00",
+    email: "amanda.pereira@email.com",
+    phone: "(85) 93333-2222",
+    createdAt: "2024-03-20",
+  },
+  {
+    id: 10,
+    name: "Bruno Ferreira",
+    cpf: "000.111.222-33",
+    email: "bruno.ferreira@email.com",
+    phone: "(27) 92222-1111",
+    createdAt: "2024-03-25",
   },
 ];
 
 export default function Students() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStudent, setCurrentStudent] = useState({
     id: null,
@@ -53,9 +100,8 @@ export default function Students() {
     phone: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  // Simula carregamento de dados de uma API
+  // Simula carregamento de dados
   useEffect(() => {
     const fetchStudents = async () => {
       // Simula delay de rede
@@ -68,16 +114,53 @@ export default function Students() {
     fetchStudents();
   }, []);
 
-  // Filtra estudantes de acordo com o termo de busca
-  const filteredStudents = students.filter(
-    (student) =>
-      student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.cpf.includes(searchTerm) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.phone.includes(searchTerm)
-  );
+  // Definição das colunas da tabela
+  const columns = [
+    {
+      header: "ID",
+      accessor: "id",
+      sortable: true,
+    },
+    {
+      header: "Nome",
+      accessor: "name",
+      render: (student) => (
+        <div className="flex items-center gap-1">
+          <User size={16} className="text-gray-500" />
+          <span>{student.name}</span>
+        </div>
+      ),
+      sortable: true,
+    },
+    {
+      header: "CPF",
+      accessor: "cpf",
+      sortable: true,
+    },
+    {
+      header: "E-mail",
+      accessor: "email",
+      sortable: true,
+      render: (student) => (
+        <div className="flex items-center gap-1">
+          <Mail size={16} className="text-gray-500" />
+          <span>{student.email}</span>
+        </div>
+      ),
+    },
+    {
+      header: "Telefone",
+      accessor: "phone",
+      render: (student) => (
+        <div className="flex items-center gap-1">
+          <Phone size={16} className="text-gray-500" />
+          <span>{student.phone}</span>
+        </div>
+      ),
+    },
+  ];
 
-  // Funções de CRUD
+  // Manipuladores de eventos
   const handleAddStudent = () => {
     setCurrentStudent({
       id: null,
@@ -98,23 +181,29 @@ export default function Students() {
 
   const handleDeleteStudent = (id) => {
     setStudents(students.filter((student) => student.id !== id));
-    setDeleteConfirmId(null);
   };
 
   const handleSaveStudent = () => {
+    // Validação básica
+    if (!currentStudent.name || !currentStudent.cpf || !currentStudent.email) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
     if (isEditing) {
-      // Editar estudante existente
+      // Editar aluno existente
       setStudents(
         students.map((student) =>
           student.id === currentStudent.id ? currentStudent : student
         )
       );
     } else {
-      // Adicionar novo estudante
+      // Adicionar novo aluno
       const newStudent = {
         ...currentStudent,
         id:
           students.length > 0 ? Math.max(...students.map((s) => s.id)) + 1 : 1,
+        createdAt: new Date().toISOString().split("T")[0],
       };
       setStudents([...students, newStudent]);
     }
@@ -130,220 +219,103 @@ export default function Students() {
     });
   };
 
+  // Função para formatar CPF durante a digitação
+  const formatCPF = (value) => {
+    const cpf = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (cpf.length <= 3) return cpf;
+    if (cpf.length <= 6) return `${cpf.slice(0, 3)}.${cpf.slice(3)}`;
+    if (cpf.length <= 9)
+      return `${cpf.slice(0, 3)}.${cpf.slice(3, 6)}.${cpf.slice(6)}`;
+    return `${cpf.slice(0, 3)}.${cpf.slice(3, 6)}.${cpf.slice(
+      6,
+      9
+    )}-${cpf.slice(9, 11)}`;
+  };
+
+  // Função para formatar telefone durante a digitação
+  const formatPhone = (value) => {
+    const phone = value.replace(/\D/g, ""); // Remove caracteres não numéricos
+    if (phone.length <= 2) return phone;
+    if (phone.length <= 7) return `(${phone.slice(0, 2)}) ${phone.slice(2)}`;
+    return `(${phone.slice(0, 2)}) ${phone.slice(2, 7)}-${phone.slice(7, 11)}`;
+  };
+
+  const handleCPFChange = (e) => {
+    const formattedCPF = formatCPF(e.target.value);
+    setCurrentStudent({
+      ...currentStudent,
+      cpf: formattedCPF,
+    });
+  };
+
+  const handlePhoneChange = (e) => {
+    const formattedPhone = formatPhone(e.target.value);
+    setCurrentStudent({
+      ...currentStudent,
+      phone: formattedPhone,
+    });
+  };
+
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Gerenciamento de Alunos</h1>
-
-      {/* Barra de pesquisa e botão de adicionar */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-        <div className="relative w-full sm:w-64">
-          <input
-            type="text"
-            placeholder="Pesquisar alunos..."
-            className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-        </div>
-
-        <button
-          onClick={handleAddStudent}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors w-full sm:w-auto justify-center"
-        >
-          <Plus size={18} />
-          Novo Aluno
-        </button>
-      </div>
-
-      {/* Tabela de alunos */}
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Nome
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  CPF
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  E-mail
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Telefone
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {loading ? (
-                <tr>
-                  <td
-                    colSpan="6"
-                    className="px-6 py-4 text-center text-gray-500"
-                  >
-                    Carregando alunos...
-                  </td>
-                </tr>
-              ) : filteredStudents.length > 0 ? (
-                filteredStudents.map((student) => (
-                  <tr key={student.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {student.id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {student.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.cpf}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.email}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {student.phone}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleEditStudent(student)}
-                          className="text-blue-600 hover:text-blue-900 p-1"
-                        >
-                          <Pencil size={18} />
-                        </button>
-
-                        {deleteConfirmId === student.id ? (
-                          <>
-                            <button
-                              onClick={() => handleDeleteStudent(student.id)}
-                              className="text-green-600 hover:text-green-900 p-1"
-                            >
-                              <Check size={18} />
-                            </button>
-                            <button
-                              onClick={() => setDeleteConfirmId(null)}
-                              className="text-gray-600 hover:text-gray-900 p-1"
-                            >
-                              <X size={18} />
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => setDeleteConfirmId(student.id)}
-                            className="text-red-600 hover:text-red-900 p-1"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan="6"
-                    className="px-6 py-4 text-center text-gray-500"
-                  >
-                    Nenhum aluno encontrado
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <>
+      <DataTable
+        title="Gerenciamento de Alunos"
+        data={students}
+        columns={columns}
+        loading={loading}
+        searchKey={["name", "email", "cpf"]}
+        searchPlaceholder="Pesquisar alunos..."
+        onAdd={handleAddStudent}
+        onEdit={handleEditStudent}
+        onDelete={handleDeleteStudent}
+        addButtonText="Novo Aluno"
+      />
 
       {/* Modal para adicionar/editar aluno */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-            <h2 className="text-xl font-semibold mb-4">
-              {isEditing ? "Editar Aluno" : "Adicionar Novo Aluno"}
-            </h2>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={isEditing ? "Editar Aluno" : "Adicionar Novo Aluno"}
+        onSave={handleSaveStudent}
+      >
+        <FormField
+          label="Nome completo"
+          name="name"
+          value={currentStudent.name}
+          onChange={handleInputChange}
+          placeholder="Nome do aluno"
+          required
+        />
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nome
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={currentStudent.name}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Nome completo"
-                />
-              </div>
+        <FormField
+          label="CPF"
+          name="cpf"
+          value={currentStudent.cpf}
+          onChange={handleCPFChange}
+          placeholder="000.000.000-00"
+          maxLength={14}
+          required
+        />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  CPF
-                </label>
-                <input
-                  type="text"
-                  name="cpf"
-                  value={currentStudent.cpf}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="000.000.000-00"
-                />
-              </div>
+        <FormField
+          label="E-mail"
+          name="email"
+          value={currentStudent.email}
+          onChange={handleInputChange}
+          placeholder="email@exemplo.com"
+          type="email"
+          required
+        />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  E-mail
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={currentStudent.email}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="email@exemplo.com"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Telefone
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={currentStudent.phone}
-                  onChange={handleInputChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="(00) 00000-0000"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSaveStudent}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Salvar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+        <FormField
+          label="Telefone"
+          name="phone"
+          value={currentStudent.phone}
+          onChange={handlePhoneChange}
+          placeholder="(00) 00000-0000"
+          maxLength={15}
+        />
+      </Modal>
+    </>
   );
 }
