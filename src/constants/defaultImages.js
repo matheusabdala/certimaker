@@ -12,6 +12,16 @@ export const defaultImages = [
     x: 690, // Posicionamento padrão no canto superior direito
     y: 20,
   },
+  {
+    id: 2,
+    label: "QR Code",
+    filename: "qr-code.jpg",
+    path: "src/assets/images/defaults/qr-code.png",
+    width: 150,
+    height: 70,
+    x: 690, // Posicionamento padrão no canto superior direito
+    y: 20,
+  },
 ];
 
 // Imagens padrão para a segunda página
