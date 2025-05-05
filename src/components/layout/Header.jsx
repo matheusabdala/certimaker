@@ -1,4 +1,3 @@
-// src/components/layout/Header.jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -9,6 +8,7 @@ import {
   BadgeCheck,
   Settings,
   Rocket,
+  FileBadge,
 } from "lucide-react";
 
 export default function Header() {
@@ -26,7 +26,7 @@ export default function Header() {
         to="/"
         className="text-2xl font-bold inline-flex items-center gap-2 hover:text-gray-300"
       >
-        <GraduationCap className="w-6 h-6" />
+        <BadgeCheck className="w-6 h-6" />
         CertiMaker
       </Link>
 
@@ -49,7 +49,7 @@ export default function Header() {
           className={isActive("/certificados")}
           title="Certificados"
         >
-          <BadgeCheck className="w-5 h-5" />
+          <FileBadge className="w-5 h-5" />
         </Link>
       </nav>
 
